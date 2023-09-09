@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bells307/redis-tsr-queue/internal/queue"
+	"github.com/bells307/go-tsrq/internal/queue"
 	"github.com/redis/go-redis/v9"
 )
 

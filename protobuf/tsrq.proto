@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option go_package = ".;tsrq_grpc";
+
+import "google/protobuf/empty.proto";
+
+package grpc;
+
+service TSRQService {
+    rpc Enqueue(QueuedData) returns(google.protobuf.Empty);
+    rpc Dequeue(google.protobuf.Empty) returns(QueuedData);
+    rpc Remove(Id) returns(google.protobuf.Empty);
+    rpc Exists(Id) returns(ExistsResponse);
+    rpc Count(google.protobuf.Empty) returns(CountResponse);
+}
+
+message QueuedData {
+    string id = 1;
+    bytes data = 2;
+}
+
+message Id {
+    string id = 1;
+}
+
+message ExistsResponse {
+    bool exists = 1;
+}
+
+message CountResponse {
+    int64 count = 1;
+}

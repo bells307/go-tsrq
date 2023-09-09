@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bells307/redis-tsr-queue/internal/transaction"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -136,7 +135,7 @@ func (q *RedisTimestampRoundQueue) Dequeue(ctx context.Context) (*DequeueResult,
 		return err
 	}
 
-	err := transaction.TransactionLoop(ctx, q.client, nil, tranFn, q.lastDequeueIndexName(), q.createTimestampIndexName(), q.dataHashmapName())
+	err := TransactionLoop(ctx, q.client, nil, tranFn, q.lastDequeueIndexName(), q.createTimestampIndexName(), q.dataHashmapName())
 
 	return deqResult, err
 }
