@@ -180,7 +180,6 @@ func (q *RedisTimestampRoundQueue) cleanup(ctx context.Context) error {
 
 	// Получем идентификаторы элементов на удаление
 	ids, _ := q.client.ZRangeByScore(ctx, q.createTimestampIndexName(), &opt).Result()
-	fmt.Println(ids)
 
 	_, err := q.client.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
 		pipe.ZRem(ctx, q.createTimestampIndexName(), ids)

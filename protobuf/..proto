@@ -3,20 +3,28 @@ syntax = "proto3";
 option go_package = ".;tsrq_grpc";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
 
 package grpc;
 
 service TSRQService {
     rpc Enqueue(QueuedData) returns(google.protobuf.Empty);
-    rpc Dequeue(google.protobuf.Empty) returns(QueuedData);
+    rpc Dequeue(google.protobuf.Empty) returns(DequeueResponse);
     rpc Remove(Id) returns(google.protobuf.Empty);
     rpc Exists(Id) returns(ExistsResponse);
     rpc Count(google.protobuf.Empty) returns(CountResponse);
 }
 
+message DequeueResponse {
+    oneof maybeData {
+        google.protobuf.NullValue null = 1;
+        QueuedData data = 2;
+    }
+}
+
 message QueuedData {
     string id = 1;
-    bytes data = 2;
+    string data = 2;
 }
 
 message Id {

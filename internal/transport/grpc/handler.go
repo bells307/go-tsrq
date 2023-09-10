@@ -43,13 +43,18 @@ func (h *TSRQHandler) Enqueue(ctx context.Context, data *QueuedData) (*emptypb.E
 	return &emptypb.Empty{}, nil
 }
 
-func (h *TSRQHandler) Dequeue(ctx context.Context, _ *emptypb.Empty) (*QueuedData, error) {
+func (h *TSRQHandler) Dequeue(ctx context.Context, _ *emptypb.Empty) (*DequeueResponse, error) {
 	res, err := h.queue.Dequeue(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return &QueuedData{Id: res.Id, Data: res.Data}, nil
+	if res == nil {
+		return &DequeueResponse{MaybeData: &DequeueResponse_Null{}}, nil
+	} else {
+		data := QueuedData{Id: res.Id, Data: string(res.Data)}
+		return &DequeueResponse{MaybeData: &DequeueResponse_Data{Data: &data}}, nil
+	}
 }
 
 func (h *TSRQHandler) Remove(ctx context.Context, id *Id) (*emptypb.Empty, error) {

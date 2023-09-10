@@ -32,7 +32,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TSRQServiceClient interface {
 	Enqueue(ctx context.Context, in *QueuedData, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Dequeue(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*QueuedData, error)
+	Dequeue(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*DequeueResponse, error)
 	Remove(ctx context.Context, in *Id, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Exists(ctx context.Context, in *Id, opts ...grpc.CallOption) (*ExistsResponse, error)
 	Count(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CountResponse, error)
@@ -55,8 +55,8 @@ func (c *tSRQServiceClient) Enqueue(ctx context.Context, in *QueuedData, opts ..
 	return out, nil
 }
 
-func (c *tSRQServiceClient) Dequeue(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*QueuedData, error) {
-	out := new(QueuedData)
+func (c *tSRQServiceClient) Dequeue(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*DequeueResponse, error) {
+	out := new(DequeueResponse)
 	err := c.cc.Invoke(ctx, TSRQService_Dequeue_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (c *tSRQServiceClient) Count(ctx context.Context, in *emptypb.Empty, opts .
 // for forward compatibility
 type TSRQServiceServer interface {
 	Enqueue(context.Context, *QueuedData) (*emptypb.Empty, error)
-	Dequeue(context.Context, *emptypb.Empty) (*QueuedData, error)
+	Dequeue(context.Context, *emptypb.Empty) (*DequeueResponse, error)
 	Remove(context.Context, *Id) (*emptypb.Empty, error)
 	Exists(context.Context, *Id) (*ExistsResponse, error)
 	Count(context.Context, *emptypb.Empty) (*CountResponse, error)
@@ -110,7 +110,7 @@ type UnimplementedTSRQServiceServer struct {
 func (UnimplementedTSRQServiceServer) Enqueue(context.Context, *QueuedData) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Enqueue not implemented")
 }
-func (UnimplementedTSRQServiceServer) Dequeue(context.Context, *emptypb.Empty) (*QueuedData, error) {
+func (UnimplementedTSRQServiceServer) Dequeue(context.Context, *emptypb.Empty) (*DequeueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Dequeue not implemented")
 }
 func (UnimplementedTSRQServiceServer) Remove(context.Context, *Id) (*emptypb.Empty, error) {
