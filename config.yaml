@@ -1,0 +1,6 @@
+grpc_listen: :9999
+redis_addr: redis:6379
+queue:
+  name: gotsr
+  deq_period: 10s
+  ttl: 1h
