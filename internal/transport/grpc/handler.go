@@ -2,10 +2,12 @@ package tsrq_grpc
 
 import (
 	context "context"
+	"fmt"
 
 	"github.com/bells307/go-tsrq/internal/queue"
 	grpc "google.golang.org/grpc"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // GRPC-обработчик
@@ -36,7 +38,12 @@ func (h *TSRQHandler) Register(s *grpc.Server) {
 }
 
 func (h *TSRQHandler) Enqueue(ctx context.Context, data *QueuedData) (*emptypb.Empty, error) {
-	if err := h.queue.Enqueue(ctx, data.Id, data.Data); err != nil {
+	bytes, err := data.Data.MarshalJSON()
+	if err != nil {
+		return nil, fmt.Errorf("marshalling json: %s", err)
+	}
+
+	if err := h.queue.Enqueue(ctx, data.Id, bytes); err != nil {
 		return nil, err
 	}
 
@@ -52,7 +59,9 @@ func (h *TSRQHandler) Dequeue(ctx context.Context, _ *emptypb.Empty) (*DequeueRe
 	if res == nil {
 		return &DequeueResponse{MaybeData: &DequeueResponse_Null{}}, nil
 	} else {
-		data := QueuedData{Id: res.Id, Data: string(res.Data)}
+		var s structpb.Struct
+		s.UnmarshalJSON(res.Data)
+		data := QueuedData{Id: res.Id, Data: &s}
 		return &DequeueResponse{MaybeData: &DequeueResponse_Data{Data: &data}}, nil
 	}
 }
